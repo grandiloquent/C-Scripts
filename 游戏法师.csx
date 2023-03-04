@@ -72,14 +72,16 @@ void FashiStrong()
     {
         _thread1 = Kernel32.CreateThread(IntPtr.Zero, 0, new THREAD_START_ROUTINE((v) =>
         {
-            int count = 0;
+
             while (true)
             {
-                keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-                keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+                 SendKey(0x32);
+               // keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                //keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
                 Kernel32.Sleep(1000);
 
                 /*
+                 int count = 0;
                 SendKey(0x32); // 键盘2
 
                  if (count == 9)
