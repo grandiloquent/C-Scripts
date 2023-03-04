@@ -38,4 +38,5 @@ files.AsParallel().ForAll(x =>
 // https://github.com/dotnet-script/dotnet-script
 // https://github.com/dotnet-script/dotnet-script/issues/378
 // dotnet script 整理桌面.csx
-// dotnet script 整理桌面.csx -c release
+// dotnet script publish 整理桌面.csx -r win10-x64
+// dotnet script build 整理桌面.csx -r win10-x64

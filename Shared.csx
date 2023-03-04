@@ -246,8 +246,39 @@ public static string GetDesktopPath(this string f)
 {
     return Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), f);
 }
+ public static int GetFileNameSequence(this string dir)
+    {
+        var files = Directory.GetFiles(dir,"*.mp4");
+        var max = -1;
+        var regex = new Regex("\\d+");
+        foreach (var file in files)
+        {
+            var match = regex.Match(Path.GetFileNameWithoutExtension(file));
+            if (match.Success)
+            {
+                var t = 0;
+                if (int.TryParse(match.Value, out t) && t > max)
+                {
+                    max = t;
+                }
+            }
+        }
+        return max + 1;
+    }
+static readonly string[] SizeSuffixes = { "bytes", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB" };
+    const long byteConversion = 1000;
+    public static string GetHumanReadableFileSize(this long value)
+    {
+
+        if (value < 0) { return "-" + GetHumanReadableFileSize(-value); }
+        if (value == 0) { return "0.0 bytes"; }
+
+        int mag = (int)Math.Log(value, byteConversion);
+        double adjustedSize = (value / Math.Pow(1000, mag));
 
 
+        return string.Format("{0:n2} {1}", adjustedSize, SizeSuffixes[mag]);
+    }
 public static class ClipboardShare
 
 {
