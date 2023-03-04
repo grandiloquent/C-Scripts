@@ -11,7 +11,8 @@ const int INPUT_KEYBOARD = 1;
 const int KEYEVENTF_KEYDOWN = 0x0;
 const int KEYEVENTF_KEYUP = 0x2;
 const int KEYEVENTF_EXTENDEDKEY = 0x1;
-
+[DllImport("user32.dll", SetLastError = true)]
+static extern uint SendInput(uint numberOfInputs, INPUT[] inputs, int sizeOfInputStructure);
 static void SendKey(int key, bool isExtend = false)
 {
     INPUT input = GetKeyDownInput(key, isExtend);
@@ -61,7 +62,8 @@ static extern sbyte GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin,
 
 [DllImport("user32.dll")]
 static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
-
+[DllImport("user32.dll")]
+static extern Byte MapVirtualKey(UInt32 uCode, UInt32 uMapType);
 IntPtr _thread1 = IntPtr.Zero;
 bool _threadRun = false;
 
@@ -75,11 +77,10 @@ void FashiStrong()
 
             while (true)
             {
-                 SendKey(0x32);
-               // keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
-                //keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
-                Kernel32.Sleep(1000);
 
+                keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+                Kernel32.Sleep(1000);
                 /*
                  int count = 0;
                 SendKey(0x32); // 键盘2
