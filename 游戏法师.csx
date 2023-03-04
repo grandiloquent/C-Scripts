@@ -1,71 +1,40 @@
-
+using System;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Microsoft.Win32.SafeHandles;
 
-[StructLayout(LayoutKind.Sequential)]
-public struct MOUSEINPUT
-{
-    public int dx;
-    public int dy;
-    public int mouseData;
-    public int dwFlags;
-    public int time;
-    public int dwExtraInfo;
-};
 
-[StructLayout(LayoutKind.Sequential)]
-public struct KEYBDINPUT
-{
-    public short wVk;
-    public short wScan;
-    public int dwFlags;
-    public int time;
-    public int dwExtraInfo;
-};
-
-[StructLayout(LayoutKind.Sequential)]
-public struct HARDWAREINPUT
-{
-    public int uMsg;
-    public short wParamL;
-    public short wParamH;
-};
-
-[StructLayout(LayoutKind.Explicit)]
-public struct INPUT
-{
-    [FieldOffset(0)]
-    public int type;
-    [FieldOffset(4)]
-    public MOUSEINPUT no;
-    [FieldOffset(4)]
-    public KEYBDINPUT ki;
-    [FieldOffset(4)]
-    public HARDWAREINPUT hi;
-};
 [DllImport("user32.dll")]
-public static extern void SendInput(int nInputs, ref INPUT pInputs, int cbsize);
+static extern void SendInput(int nInputs, ref INPUT pInputs, int cbsize);
+
 const int INPUT_KEYBOARD = 1;
 const int KEYEVENTF_KEYDOWN = 0x0;
 const int KEYEVENTF_KEYUP = 0x2;
 const int KEYEVENTF_EXTENDEDKEY = 0x1;
-public static void SendKey(int key, bool isExtend = false)
-{
 
+static void SendKey(int key, bool isExtend = false)
+{
     INPUT input = GetKeyDownInput(key, isExtend);
+
     SendInput(1, ref input, Marshal.SizeOf(input));
-    Thread.Sleep(100); // wait
+    //Thread.Sleep(100); // wait
     input = GetKeyUpInput(input, isExtend);
     SendInput(1, ref input, Marshal.SizeOf(input));
+    //Console.WriteLine("{0}:{1}","SendKey",Marshal.SizeOf(input));
 }
+
 static INPUT GetKeyUpInput(INPUT input, bool isExtend)
 {
     input.ki.dwFlags = ((isExtend) ? KEYEVENTF_EXTENDEDKEY : 0x0) | KEYEVENTF_KEYUP;
     return input;
 }
+
 static INPUT GetKeyDownInput(int key, bool isExtend)
 {
+    // https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-input
+    // https://learn.microsoft.com/en-us/windows/desktop/api/winuser/nf-winuser-sendinput
+    // https://learn.microsoft.com/en-us/windows/win32/api/winuser/ns-winuser-keybdinput
+    // https://learn.microsoft.com/en-us/windows/win32/inputdev/virtual-key-codes
     return new INPUT
     {
         type = INPUT_KEYBOARD,
@@ -79,7 +48,154 @@ static INPUT GetKeyDownInput(int key, bool isExtend)
         },
     };
 }
+
+[DllImport("user32.dll", CharSet = CharSet.Auto)]
+static extern bool TranslateMessage([In, Out] ref MSG msg);
+
+[DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+static extern int DispatchMessage([In] ref MSG msg);
+
+[DllImport("user32.dll")]
+static extern sbyte GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin,
+    uint wMsgFilterMax);
+
+[DllImport("user32.dll")]
+static extern void keybd_event(byte bVk, byte bScan, uint dwFlags, uint dwExtraInfo);
+
+IntPtr _thread1 = IntPtr.Zero;
+bool _threadRun = false;
+
+void FashiStrong()
+{
+    IntPtr thread = IntPtr.Zero;
+    if (_thread1 == IntPtr.Zero)
+    {
+        _thread1 = Kernel32.CreateThread(IntPtr.Zero, 0, new THREAD_START_ROUTINE((v) =>
+        {
+            int count = 0;
+            while (true)
+            {
+                keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | 0, 0);
+                keybd_event(0x32, 0, KEYEVENTF_EXTENDEDKEY | KEYEVENTF_KEYUP, 0);
+                Kernel32.Sleep(1000);
+
+                /*
+                SendKey(0x32); // 键盘2
+
+                 if (count == 9)
+                {
+                    count = 0;
+
+                    SendKey(0x31);
+                    Kernel32.Sleep(1000);
+                    SendKey(0x33);
+                    Kernel32.Sleep(1000);
+                }
+
+                count++;*/
+            }
+        }), IntPtr.Zero, 0, thread);
+        _threadRun = true;
+    }
+    else
+    {
+        if (_threadRun)
+        {
+            Kernel32.SuspendThread(_thread1);
+        }
+        else
+        {
+            Kernel32.ResumeThread(_thread1);
+        }
+
+        _threadRun = !_threadRun;
+    }
+}
+
+var kbh = new KeyboardShare();
+kbh.ConfigHook();
+kbh.KeyDown += (s, k) =>
+{
+    switch (k.Key)
+    {
+        case Key.F9:
+            FashiStrong();
+            break;
+    }
+};
+MSG message;
+while (GetMessage(out message, IntPtr.Zero, 0, 0) != 0)
+{
+    TranslateMessage(ref message);
+    DispatchMessage(ref message);
+}
+
+/////////////////
+
+public class KeyboardShare
+{
+    [DllImport("User32.dll")]
+    private static extern IntPtr SetWindowsHookExA(HookID hookID, KeyboardHookProc lpfn, IntPtr hmod,
+        int dwThreadId);
+
+    [DllImport("User32.dll")]
+    private static extern IntPtr CallNextHookEx(IntPtr hook, int code, IntPtr wParam, IntPtr lParam);
+
+    [DllImport("kernel32.dll")]
+    static extern IntPtr GetConsoleWindow();
+
+    public delegate IntPtr KeyboardHookProc(int code, IntPtr wParam, IntPtr lParam);
+
+    private event KeyboardHookProc keyhookevent;
+    private IntPtr hookPtr;
+
+    public KeyboardShare()
+    {
+        this.keyhookevent += KeyboardHook_keyhookevent;
+    }
+
+    private IntPtr KeyboardHook_keyhookevent(int code, IntPtr wParam, IntPtr lParam)
+    {
+        KeyStaus ks = (KeyStaus)wParam.ToInt32();
+        KeyboardHookStruct khs = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
+        KeyEvent ke = ks == KeyStaus.KeyDown || ks == KeyStaus.SysKeyDown ? KeyDown : KeyUp;
+        if (ke != null)
+        {
+            ke.Invoke(this, new KeyEventArg()
+            {
+                Key = khs.Key,
+                KeyStaus = ks
+            });
+        }
+
+        return CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
+    }
+
+    public void ConfigHook()
+    {
+        hookPtr = SetWindowsHookExA(HookID.Keyboard_LL, keyhookevent, IntPtr.Zero, 0);
+        if (hookPtr == null)
+            throw new Exception();
+    }
+
+    public delegate void KeyEvent(object sender, KeyEventArg e);
+
+    public event KeyEvent KeyDown;
+    public event KeyEvent KeyUp;
+}
+
+[StructLayout(LayoutKind.Explicit, Size = 20)]
+public struct KeyboardHookStruct
+{
+    [FieldOffset(0)] public Key Key;
+    [FieldOffset(4)] public int ScanCode;
+    [FieldOffset(8)] public int Flags;
+    [FieldOffset(12)] public int Time;
+    [FieldOffset(16)] public IntPtr dwExtraInfo;
+}
+
 public delegate uint THREAD_START_ROUTINE(IntPtr lpThreadParameter);
+
 // https://github.com/Wiladams/TOAPI/blob/70c0dd060970853efda5e6d02ed0951571dfa9ec/TOAPI.Kernel32/Kernel32_Thread.cs
 // https://github.com/NgonPhi/BTL-OS/blob/b98adafd6e05ec044c1f5896336de52d61075fff/Main/Main/ThreadM.cs
 // https://github.com/VanessaNiculae/Thread-App/blob/30e840b311e24f007f34245c1a2d797a255ca0e7/lab5/WinApiClass.cs
@@ -167,58 +283,8 @@ public static class Kernel32
 
     [DllImport("kernel32.dll", SetLastError = true)]
     public static extern Int32 WaitForSingleObject(SafeWaitHandle hHandle, Int32 dwMilliseconds);
+}
 
-}
-public class KeyboardShare
-{
-    [DllImport("User32.dll")]
-    private static extern IntPtr SetWindowsHookExA(HookID hookID, KeyboardHookProc lpfn, IntPtr hmod,
-        int dwThreadId);
-    [DllImport("User32.dll")]
-    private static extern IntPtr CallNextHookEx(IntPtr hook, int code, IntPtr wParam, IntPtr lParam);
-    [DllImport("kernel32.dll")]
-    static extern IntPtr GetConsoleWindow();
-    public delegate IntPtr KeyboardHookProc(int code, IntPtr wParam, IntPtr lParam);
-    private event KeyboardHookProc keyhookevent;
-    private IntPtr hookPtr;
-    public KeyboardShare()
-    {
-        this.keyhookevent += KeyboardHook_keyhookevent;
-    }
-    private IntPtr KeyboardHook_keyhookevent(int code, IntPtr wParam, IntPtr lParam)
-    {
-        KeyStaus ks = (KeyStaus)wParam.ToInt32();
-        KeyboardHookStruct khs = (KeyboardHookStruct)Marshal.PtrToStructure(lParam, typeof(KeyboardHookStruct));
-        KeyEvent ke = ks == KeyStaus.KeyDown || ks == KeyStaus.SysKeyDown ? KeyDown : KeyUp;
-        if (ke != null)
-        {
-            ke.Invoke(this, new KeyEventArg()
-            {
-                Key = khs.Key,
-                KeyStaus = ks
-            });
-        }
-        return CallNextHookEx(IntPtr.Zero, code, wParam, lParam);
-    }
-    public void ConfigHook()
-    {
-        hookPtr = SetWindowsHookExA(HookID.Keyboard_LL, keyhookevent, IntPtr.Zero, 0);
-        if (hookPtr == null)
-            throw new Exception();
-    }
-    public delegate void KeyEvent(object sender, KeyEventArg e);
-    public event KeyEvent KeyDown;
-    public event KeyEvent KeyUp;
-}
-[StructLayout(LayoutKind.Explicit, Size = 20)]
-public struct KeyboardHookStruct
-{
-    [FieldOffset(0)] public Key Key;
-    [FieldOffset(4)] public int ScanCode;
-    [FieldOffset(8)] public int Flags;
-    [FieldOffset(12)] public int Time;
-    [FieldOffset(16)] public IntPtr dwExtraInfo;
-}
 public enum KeyStaus
 {
     KeyDown = 0x0100,
@@ -226,11 +292,13 @@ public enum KeyStaus
     SysKeyDown = 0x0104,
     SysKeyUp = 0x0105
 }
+
 public class KeyEventArg
 {
     public Key Key;
     public KeyStaus KeyStaus;
 }
+
 public enum HookID
 {
     Callwndproc = 4,
@@ -249,6 +317,7 @@ public enum HookID
     Shell = 10,
     SysmsgFilter = 6
 }
+
 public enum Key
 {
     LeftButton = 0x01,
@@ -430,6 +499,7 @@ public enum Key
     PA1 = 0xFD,
     OEMClear = 0xFE
 }
+
 [StructLayout(LayoutKind.Sequential)]
 public struct MSG
 {
@@ -441,73 +511,44 @@ public struct MSG
     public int pt_x;
     public int pt_y;
 }
-[DllImport("user32.dll", CharSet = CharSet.Auto)]
-public static extern bool TranslateMessage([In, Out] ref MSG msg);
-[DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
-public static extern int DispatchMessage([In] ref MSG msg);
-[DllImport("user32.dll")]
-public static extern sbyte GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin,
-    uint wMsgFilterMax);
 
-public static IntPtr _thread1 = IntPtr.Zero;
-public static bool _threadRun = false;
-
-public static void FashiStrong()
+[StructLayout(LayoutKind.Sequential)]
+public struct MOUSEINPUT
 {
-    IntPtr thread = IntPtr.Zero;
-    if (_thread1 == IntPtr.Zero)
-    {
-        _thread1 = Kernel32.CreateThread(IntPtr.Zero, 0, new THREAD_START_ROUTINE((v) =>
-        {
-            int count = 0;
-            while (true)
-            {
-                SendKey(0x32);
-                Kernel32.Sleep(1000);
-
-                if (count == 9)
-                {
-                    count = 0;
-
-                    SendKey(0x31);
-                    Kernel32.Sleep(1000);
-                    SendKey(0x33);
-                    Kernel32.Sleep(1000);
-                }
-                count++;
-            }
-        }), IntPtr.Zero, 0, thread);
-        _threadRun = true;
-    }
-    else
-    {
-        if (_threadRun)
-        {
-            Kernel32.SuspendThread(_thread1);
-        }
-        else
-        {
-            Kernel32.ResumeThread(_thread1);
-        }
-        _threadRun = !_threadRun;
-    }
-}
-var kbh = new KeyboardShare();
-kbh.ConfigHook();
-kbh.KeyDown += (s, k) =>
-{
-    switch (k.Key)
-    {
-        case Key.F9:
-            FashiStrong();
-            break;
-    }
+    public int dx;
+    public int dy;
+    public int mouseData;
+    public int dwFlags;
+    public int time;
+    public int dwExtraInfo;
 };
-MSG message;
-while (GetMessage(out message, IntPtr.Zero, 0, 0) != 0)
+
+[StructLayout(LayoutKind.Sequential)]
+public struct KEYBDINPUT
 {
-    TranslateMessage(ref message);
-    DispatchMessage(ref message);
-}
+    public short wVk;
+    public short wScan;
+    public int dwFlags;
+    public int time;
+    public int dwExtraInfo;
+};
+
+[StructLayout(LayoutKind.Sequential)]
+public struct HARDWAREINPUT
+{
+    public int uMsg;
+    public short wParamL;
+    public short wParamH;
+};
+
+[StructLayout(LayoutKind.Explicit)]
+public struct INPUT
+{
+    [FieldOffset(0)] public int type;
+    [FieldOffset(4)] public MOUSEINPUT no;
+    [FieldOffset(4)] public KEYBDINPUT ki;
+    [FieldOffset(4)] public HARDWAREINPUT hi;
+};
+
 // dotnet script 游戏法师.csx
 // dotnet script 游戏法师.csx -c release
