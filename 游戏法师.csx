@@ -430,6 +430,24 @@ public enum Key
     PA1 = 0xFD,
     OEMClear = 0xFE
 }
+[StructLayout(LayoutKind.Sequential)]
+public struct MSG
+{
+    public IntPtr hwnd;
+    public int message;
+    public IntPtr wParam;
+    public IntPtr lParam;
+    public int time;
+    public int pt_x;
+    public int pt_y;
+}
+[DllImport("user32.dll", CharSet = CharSet.Auto)]
+public static extern bool TranslateMessage([In, Out] ref MSG msg);
+[DllImport("user32.dll", CharSet = System.Runtime.InteropServices.CharSet.Auto)]
+public static extern int DispatchMessage([In] ref MSG msg);
+[DllImport("user32.dll")]
+public static extern sbyte GetMessage(out MSG lpMsg, IntPtr hWnd, uint wMsgFilterMin,
+    uint wMsgFilterMax);
 
 public static IntPtr _thread1 = IntPtr.Zero;
 public static bool _threadRun = false;
@@ -476,8 +494,20 @@ public static void FashiStrong()
 }
 var kbh = new KeyboardShare();
 kbh.ConfigHook();
-kbh.KeyDown += async (s, k) => {
+kbh.KeyDown += (s, k) =>
+{
+    switch (k.Key)
+    {
+        case Key.F9:
+            FashiStrong();
+            break;
+    }
 };
-
+MSG message;
+while (GetMessage(out message, IntPtr.Zero, 0, 0) != 0)
+{
+    TranslateMessage(ref message);
+    DispatchMessage(ref message);
+}
 // dotnet script 游戏法师.csx
 // dotnet script 游戏法师.csx -c release
