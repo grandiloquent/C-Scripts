@@ -1,3 +1,7 @@
 *.txt
 *.bat
 *.exe
+bin
+obj
+.idea
+.vs
