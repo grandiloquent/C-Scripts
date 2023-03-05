@@ -1,4 +1,3 @@
-
 using System.Diagnostics;
 
 namespace 视频程序;
@@ -19,13 +18,13 @@ public partial class Form1 : Form
         }
 
         var source = @"C:\Users\Administrator\Desktop\代码\脚本\视频程序\视频程序\Utils.cs";
-        if(!File.Exists(source))
-            File.WriteAllText(source,string.Empty);
+        if (!File.Exists(source))
+            File.WriteAllText(source, string.Empty);
         this.Load += OnLoad;
         this.FormClosing += ((sender, args) =>
         {
-            if(!string.IsNullOrWhiteSpace(textBox1.Text))
-            File.WriteAllText(f, textBox1.Text);
+            if (!string.IsNullOrWhiteSpace(textBox1.Text))
+                File.WriteAllText(f, textBox1.Text);
         });
     }
 
@@ -48,11 +47,24 @@ public partial class Form1 : Form
             {
                 switch (k.Key)
                 {
+                    case  Key.NumPad2:
+                        new TaskFactory().StartNew(() =>
+                        {
+                            Utils.MakeVideo(textBox1.Text);
+                        });
+                        break;
+                    case Key.NumPad3:
+                        Utils.TimesYunfeng(textBox1.Text);
+                        break;
+                    case Key.NumPad6:
+                        Utils.CreateQrCode();
+                        break;
                     case Key.NumPad9:
                         Process.Start(@"C:\Program Files\Adobe\Adobe After Effects 2023\Support Files\AfterFX.exe");
                         break;
                     case Key.F4:
-                        textBox1.SelectedText = $"{textBox1.SelectedText}{Environment.NewLine}{Environment.NewLine}{Utils.TranslateChinese(textBox1.SelectedText)}";
+                        textBox1.SelectedText =
+                            $"{textBox1.SelectedText}{Environment.NewLine}{Environment.NewLine}{Utils.TranslateChinese(textBox1.SelectedText)}";
                         break;
                     case Key.F10:
                         Utils.DownloadMsnVideo();
