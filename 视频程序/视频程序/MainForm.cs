@@ -2,10 +2,6 @@ using System.Diagnostics;
 
 namespace 视频程序;
 
-using System.Net;
-using System.Text;
-using System.Text.Json;
-
 public partial class Form1 : Form
 {
     public Form1()
@@ -56,19 +52,22 @@ public partial class Form1 : Form
                     case Key.NumPad3:
                         Utils.TimesYunfeng(textBox1.Text);
                         break;
+
                     case Key.NumPad6:
                         Utils.CreateQrCode();
+                        break;
+                    case Key.NumPad8:
+                        Utils.DownloadMsnVideo();
                         break;
                     case Key.NumPad9:
                         Process.Start(@"C:\Program Files\Adobe\Adobe After Effects 2023\Support Files\AfterFX.exe");
                         break;
                     case Key.F4:
+                       if(!string.IsNullOrWhiteSpace(textBox1.SelectedText))
                         textBox1.SelectedText =
-                            $"{textBox1.SelectedText}{Environment.NewLine}{Environment.NewLine}{Utils.TranslateChinese(textBox1.SelectedText)}";
+                            $"{textBox1.SelectedText}{Environment.NewLine}{Environment.NewLine}{Utils.TranslateChinese(textBox1.SelectedText.Trim())}";
                         break;
-                    case Key.F10:
-                        Utils.DownloadMsnVideo();
-                        break;
+                    
                 }
             }
         };

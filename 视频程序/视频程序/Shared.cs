@@ -792,4 +792,24 @@ public static class Strings
         var dir = Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
         return Path.Combine(dir, f);
     }
+
+    public static int GetFileNameSequence(this string dir)
+    {
+        var files = Directory.GetFiles(dir);
+        var max = 0;
+        var regex = new Regex("\\d+");
+        foreach (var file in files)
+        {
+            var match = regex.Match(Path.GetFileNameWithoutExtension(file));
+            if (match.Success)
+            {
+                var t = 0;
+                if (int.TryParse(match.Value, out t) && t > max)
+                {
+                    max = t;
+                }
+            }
+        }
+        return max + 1;
+    }
 }

@@ -149,6 +149,16 @@ public static class Utils
             Directory.CreateDirectory(dir);
         }
 
+        /*
+         var i = 1;
+        var dir = $"{DateTime.Now:yyyyMMdd}{i.ToString().PadLeft(2, '0')}".GetDesktopPath();
+        while (Directory.Exists(dir))
+        {
+            i++;
+            dir = $"{DateTime.Now:yyyyMMdd}{i.ToString().PadLeft(2, '0')}".GetDesktopPath();
+        }
+
+         */
         return dir;
     }
 
