@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="html-to-image.js"></script>
+</head>
+<body>
+    <style>
+        #container{
+            width: 1280px;
+            height: 720px;
+            display: grid;
+            gap: 1px;
+            grid-template-columns: repeat(10,1fr);
+            background-color: black;
+        }
+        #container>div{
+            background-color: #fff;
+        }
+    </style>
+    <div id="container">
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+<div></div>
+</div>
+<script>
+ 
+
+  htmlToImage.toPng(document.getElementById('container'))
+  .then(function (dataUrl) {
+    var img = new Image();
+    img.src = dataUrl;
+    document.body.appendChild(img);
+  })
+  .catch(function (error) {
+    console.error('oops, something went wrong!', error);
+  });
+</script>
+</body>
+</html>
