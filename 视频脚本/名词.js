@@ -1,4 +1,4 @@
-function drawEllipse(options) { /*
+function drawEllipse(comp, options) { /*
     drawEllipse({
         "color": [1,1,1],
         "height": 100,
@@ -6,7 +6,7 @@ function drawEllipse(options) { /*
         "width": 100
     })
     */
-    var layer = app.project.activeItem.layers.addShape();
+    var layer = comp.layers.addShape();
     var shapeGroup = layer.property("Contents").addProperty("ADBE Vector Group");
     var shapeGroupContents = shapeGroup.property("Contents");
     var myRect = shapeGroupContents.addProperty("ADBE Vector Shape - Ellipse");
@@ -26,7 +26,7 @@ function drawEllipse(options) { /*
     }
     return layer;
 }
-function drawSquare(options) { /*
+function drawSquare(comp, options) { /*
     drawSquare({
         "color": [1,1,1],
         "height": 100,
@@ -35,7 +35,7 @@ function drawSquare(options) { /*
         "width": 100
     })
     */
-    var layer = app.project.activeItem.layers.addShape();
+    var layer = comp.layers.addShape();
     var shapeGroup = layer.property("Contents").addProperty("ADBE Vector Group");
     var shapeGroupContents = shapeGroup.property("Contents");
     var myRect = shapeGroupContents.addProperty("ADBE Vector Shape - Rect");
@@ -81,8 +81,8 @@ function anchorLeft(square, width) {
 }
 
 // 绘制文本
-function drawText(options) {
-    var comp = app.project.activeItem;
+function drawText(comp, options) {
+    var comp = comp;
     var myTextLayer = comp.layers.addText();
     var textProp = myTextLayer.property("Source Text");
     var textDocument = textProp.value;
@@ -131,8 +131,13 @@ function createTypewriterEffect(layer, startTime, endTme) {
     animator.property("ADBE Text Animator Properties").addProperty("ADBE Text Opacity").setValue(0);
     var start = animator.property("ADBE Text Selectors").addProperty("ADBE Text Selector").property("ADBE Text Percent Start")
     start.setValueAtTime(startTime, 0);
-    start.setValueAtTime(endTme, 100);
+    start.setValueAtTime(startTime + .45, 100);
+    start.setValueAtTime(endTme - .45, 100);
+    start.setValueAtTime(endTme - .15, 0);
+
 }
+var comp = app.project.activeItem;
+//app.project.items.addComp("2", item.width, item.height, item.pixelAspect, item.duration, item.frameRate);
 var color = [253 / 1 / 255, 97 / 1 / 255, 0 / 1 / 255];
 var duration = 1;
 var yPosition = 300;
@@ -140,19 +145,36 @@ var height = 90;
 var distance = 317;
 var inPoint = 0;
 var outPoint = 5;
-var color1 = drawEllipse({
+var text="Shift+Ctrl+N 新建图层"
+var textLayer = drawText(comp, {
+    "color": [255 / 1 / 255, 255 / 1 / 255, 255 / 1 / 255],
+    "font": "",
+    "fontSize": 32,
+    "inPoint": inPoint + .45,
+    "justification": ParagraphJustification.CENTER_JUSTIFY,
+    "outPoint": outPoint - .45,
+    "text": text
+});
+var textLayerRect = textLayer.sourceRectAtTime(inPoint, false);
+$.writeln(Math.round(textLayerRect.width) + 'X' + Math.round(textLayerRect.height));
+textLayer.position.setValue([
+    textLayer.position.value[0],
+    textLayer.position.value[1] + 11.6
+]);
+distance = Math.round(textLayerRect.width);
+var color1 = drawEllipse(comp, {
     "color": color,
     "height": height,
     "opacity": 100,
     "width": height
 });
-var color2 = drawEllipse({
+var color2 = drawEllipse(comp, {
     "color": color,
     "height": height,
     "opacity": 100,
     "width": height
 });
-var square = drawSquare({
+var square = drawSquare(comp, {
     "color": color,
     "height": height,
     "opacity": 100,
@@ -198,23 +220,11 @@ setScaleEase(square, 2);
 setScaleEase(square, 3);
 setScaleEase(square, 4);
 
-var textLayer = drawText({
-    "color": [255 / 1 / 255, 255 / 1 / 255, 255 / 1 / 255],
-    "font": "",
-    "fontSize": 32,
-    "inPoint": inPoint + .45,
-    "justification": ParagraphJustification.CENTER_JUSTIFY,
-    "outPoint": outPoint - .35,
-    "text": "你好你好你好你好你好"
-});
-var textLayerRect = textLayer.sourceRectAtTime(inPoint, false);
-$.writeln(Math.round(textLayerRect.width) + 'X' + Math.round(textLayerRect.height));
-textLayer.position.setValue([
-    textLayer.position.value[0],
-    textLayer.position.value[1] + 11.6
-]);
+
+
 textLayer.anchorPoint.setValue([
     square.anchorPoint.value[0],
     square.anchorPoint.value[1],
 ])
-createTypewriterEffect(textLayer, inPoint + .45, inPoint + 1.45)
+createTypewriterEffect(textLayer, textLayer.inPoint, textLayer.outPoint)
+textLayer.moveToBeginning()
