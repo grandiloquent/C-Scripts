@@ -136,8 +136,8 @@ function createTypewriterEffect(layer, startTime, endTme) {
     start.setValueAtTime(endTme - .15, 0);
 
 }
-var comp = app.project.activeItem;
-//app.project.items.addComp("2", item.width, item.height, item.pixelAspect, item.duration, item.frameRate);
+;
+var comp = app.project.items.addComp("2", app.project.activeItem.width, app.project.activeItem.height, app.project.activeItem.pixelAspect, app.project.activeItem.duration, app.project.activeItem.frameRate);
 var color = [253 / 1 / 255, 97 / 1 / 255, 0 / 1 / 255];
 var duration = 1;
 var yPosition = 300;
@@ -145,7 +145,7 @@ var height = 90;
 var distance = 317;
 var inPoint = 0;
 var outPoint = 5;
-var text="Shift+Ctrl+N 新建图层"
+var text="J 修复画笔工具"
 var textLayer = drawText(comp, {
     "color": [255 / 1 / 255, 255 / 1 / 255, 255 / 1 / 255],
     "font": "",
