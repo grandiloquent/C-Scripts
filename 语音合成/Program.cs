@@ -4,7 +4,7 @@
   using System.Text;
   using System.Text.RegularExpressions;
   
-  async static Task GetAudio(ClientWebSocket connection, string fileName, string ttsText, string voice, string style)
+  static async Task GetAudio(ClientWebSocket connection, string fileName, string ttsText, string voice, string style)
     {
         var requestId = Guid.NewGuid().ToString("N").ToUpper();
         var timestamp = DateTime.Now.ToUniversalTime().ToString("yyy-MM-dd'T'HH:mm:ss.fff'Z'");
@@ -39,13 +39,16 @@ Content-Type: application/ssml+xml
         File.WriteAllBytes(fileName, data);
     }
 
-  async static Task MsTts(string ttsText, string voice, string style)
-    {
-        var dir = $"{DateTime.Now:yyyyMMdd}".GetDesktopPath();
+  static async Task MsTts(string ttsText, string voice, string style)
+  {
+      var dir = Path.Combine(
+          Directory.GetCurrentDirectory(),
+          "音频");
         if (!Directory.Exists(dir))
         {
             Directory.CreateDirectory(dir);
         }
+         
 
         var i = 1;
         try
@@ -59,6 +62,7 @@ Content-Type: application/ssml+xml
             // ignored
         }
 
+        
 
         // ServicePointManager.SecurityProtocol = SecurityProtocolType.Ssl3
         // | SecurityProtocolType.Tls
@@ -80,21 +84,25 @@ Content-Type: application/ssml+xml
                  "southeastasia",
                  "eastasia"
          */
+       
         const string url =
             "wss://eastus.api.speech.microsoft.com/cognitiveservices/websocket/v1?TrafficType=AzureDemo&Authorization=bearer%20undefined&X-ConnectionId=";
         var connectionId = Guid.NewGuid().ToString("N").ToUpper();
         var uriBuilder = new UriBuilder(url + connectionId);
 
-        var connection = new ClientWebSocket();
+        var connection = new ClientWebSocket(); 
+      
         connection.Options.Proxy = new WebProxy("127.0.0.1", 10809);
         //connection.Options.SetRequestHeader("Accept-Encoding", "gzip");
         connection.Options.SetRequestHeader("Origin", "https://azure.microsoft.com");
-
+ Console.WriteLine(i);
         //connection.Options.SetRequestHeader("User-Agent","Mozilla/5.0 (Linux; Android 7.1.2; M2012K11AC Build/N6F26Q; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/81.0.4044.117 Mobile Safari/537.36");
         await connection.ConnectAsync(uriBuilder.Uri, CancellationToken.None);
-
-        var lines = Regex.Split(ttsText, "\\d{2}:\\d{2}:\\d{2}:\\d{2} - \\d{2}:\\d{2}:\\d{2}:\\d{2}")
+ Console.WriteLine(i);
+        // "\\d{2}:\\d{2}:\\d{2}:\\d{2} - \\d{2}:\\d{2}:\\d{2}:\\d{2}"
+        var lines = Regex.Split(ttsText, "[\r\n]+")
             .Where(x => !string.IsNullOrWhiteSpace(x));
+      
         foreach (var t in lines)
         {
             Console.WriteLine(t);
@@ -113,14 +121,14 @@ Content-Type: application/ssml+xml
         Directory.CreateDirectory(path);
     }
 
-    async static Task SendTextContent(ClientWebSocket connection, String text)
+    static async Task SendTextContent(ClientWebSocket connection, String text)
     {
         var content = System.Text.Encoding.UTF8.GetBytes(text);
         var data = new System.ArraySegment<byte>(content);
         await connection.SendAsync(data, WebSocketMessageType.Text, true, CancellationToken.None);
     }
 
-    async static Task<byte[]> ReceiveAudio(ClientWebSocket connection)
+    static async Task<byte[]> ReceiveAudio(ClientWebSocket connection)
     {
         var audioData = new List<byte>();
         var readingAudio = false;
@@ -184,12 +192,22 @@ Content-Type: application/ssml+xml
       MsTts(s, "Xiaoxiao", "newscast");
   }
 
- static void TimesYunfeng(string s)
+ static   Task TimesYunxi(string s)
   {
-      MsTts(s, "Yunfeng", "newscast");
-  }
-  TimesYunfeng(ClipboardShare.GetText().Trim());
+      try
+      {
+         return  MsTts(s, "Yunxi", "general");
 
+      }
+      catch (Exception e)
+      {
+          Console.WriteLine(e);
+      }
+
+      return null;
+  }
+  await TimesYunxi(ClipboardShare.GetText().Trim());
+  
 /*
 dotnet publish -r win-x64 --self-contained false -o C:\Users\Administrator\Desktop\应用\应用 -p:PublishSingleFile=true,AssemblyName=语音合成
 */
