@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="html-to-image.js"></script>
+</head>
+
+<body>
+    <style>
+        .button {
+            font-size: 24px;
+            line-height: 32px;
+            display: inline-flex;
+            background: #fff;
+            border: 1px solid #dadce0;
+            color: #5f6368;
+            border-radius: 48px;
+            padding: 8px 24px;
+            -webkit-user-select: none;
+            position: relative;
+            white-space: nowrap;
+        }
+
+        .img {
+            background-image: url(icons/10481864.png);
+            filter: invert(100%);
+            background-position-x: -4px;
+            background-size: cover;
+        }
+
+        }
+    </style>
+    <div class="button">
+        <div class="img" style="width: 32px;height: 32px;margin-right: 16px;">
+            <svg style="display:none ;" viewBox="0 0 24 24">
+                <path
+                    d="M18.984 9.984v-1.969h-1.969v1.969h1.969zM18.984 12.984v-1.969h-1.969v1.969h1.969zM15.984 9.984v-1.969h-1.969v1.969h1.969zM15.984 12.984v-1.969h-1.969v1.969h1.969zM15.984 17.016v-2.016h-7.969v2.016h7.969zM6.984 9.984v-1.969h-1.969v1.969h1.969zM6.984 12.984v-1.969h-1.969v1.969h1.969zM8.016 11.016v1.969h1.969v-1.969h-1.969zM8.016 8.016v1.969h1.969v-1.969h-1.969zM11.016 11.016v1.969h1.969v-1.969h-1.969zM11.016 8.016v1.969h1.969v-1.969h-1.969zM20.016 5.016q0.797 0 1.383 0.586t0.586 1.383v10.031q0 0.797-0.586 1.383t-1.383 0.586h-16.031q-0.797 0-1.383-0.586t-0.586-1.383v-10.031q0-0.797 0.586-1.383t1.383-0.586h16.031z">
+                </path>
+            </svg>
+        </div>
+        <div style="border-right: 1px solid #dadce0;margin-right: 16px;padding-right: 16px;">
+            修补工具
+        </div>
+        <div>J 键</div>
+    </div>
+    <script>
+
+        htmlToImage.toPng(document.querySelector('.button'))
+            .then(function (dataUrl) {
+                var img = new Image();
+                img.src = dataUrl;
+                document.body.appendChild(img);
+            })
+            .catch(function (error) {
+                console.error('oops, something went wrong!', error);
+            });
+    </script>
+</body>
+
+</html>

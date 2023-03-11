@@ -32,8 +32,11 @@ Func action1()
 
 	MouseUp("left")
 	Sleep(2000)
+
 	MouseClickDrag("left",491,343,575,399)
 	Sleep(2000)
+
+	Send("^d")
 EndFunc
 
 ;C:\Users\Administrator\AppData\Local\Adobe
