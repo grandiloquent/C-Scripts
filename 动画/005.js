@@ -1,20 +1,20 @@
 var comp = app.project.activeItem;
 var layer = comp.selectedLayers[0];
 var width = comp.width;
-var inPoint =0;
+var inPoint =47+15*1/30;
 
 layer.scale.setValueAtTime(inPoint, [100, 100]);
 layer.scale.setValueAtTime(inPoint + .5, [200, 200]);
-layer.scale.setValueAtTime(inPoint + .35 + 5, [200, 200]);
-layer.scale.setValueAtTime(inPoint + .35 + 5 + .5, [100, 100]);
+layer.scale.setValueAtTime(inPoint + .35 + 2, [200, 200]);
+layer.scale.setValueAtTime(inPoint + .35 + 2 + .5, [100, 100]);
 
 //comp.addGuide(1,640);
-var x = 20;
-var y =257;
+var x = 340;
+var y =44;
 comp.addGuide(2, 360);
 var times=[
     inPoint,
-    inPoint + .5,inPoint + .35 + 5,inPoint + .35 + 5 + .5,
+    inPoint + .5,inPoint + .35 + 2,inPoint + .35 + 2 + .5,
 ]
 layer.position.setValueAtTime(times[0], [640, 360]);
 

@@ -22,12 +22,3 @@ for(var i=0;i<layers.length;i++){
     // $.writeln(findLayer((i+1).toString()).outPoint);
     
 }
-
-function findLayer(name) {
-    for (var i = 0; i < comp.numLayers; i++) {
-        if (name === comp.layer(i + 1).name) {
-            return comp.layer(i + 1);
-        }
-    }
-    return null;
-}
