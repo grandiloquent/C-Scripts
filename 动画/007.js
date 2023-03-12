@@ -48,14 +48,14 @@ function scale(inPoint, outPoint, x, y, layer) {
         transformedY
     ])
     layer.position.setValueAtTime(times[3], [640, 360]);
-    setScaleEase(layer, 1);
-    setScaleEase(layer, 2);
-    setScaleEase(layer, 3);
-    setScaleEase(layer, 4);
-    setPositionEase(layer, 1);
-    setPositionEase(layer, 2);
-    setPositionEase(layer, 3);
-    setPositionEase(layer, 4);
+    // setScaleEase(layer, 1);
+    // setScaleEase(layer, 2);
+    // setScaleEase(layer, 3);
+    // setScaleEase(layer, 4);
+    // setPositionEase(layer, 1);
+    // setPositionEase(layer, 2);
+    // setPositionEase(layer, 3);
+    // setPositionEase(layer, 4);
 
 }
 
@@ -403,6 +403,6 @@ function setShortKey() {
     }
     */
 }
-setDuration();
+//setDuration();
 setScale();
-setShortKey();
+//setShortKey();

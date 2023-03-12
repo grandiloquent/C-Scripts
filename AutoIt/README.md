@@ -4,3 +4,7 @@ Sleep(500)
 MouseClick("left",18,675,1)
 Sleep(500)
 缩放工具
+Sleep(3000)
+MouseMove(1008,311)
+Sleep(2000)
+移动

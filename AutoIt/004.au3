@@ -4,12 +4,32 @@ While 1
 WEnd
 
 Func action1()
+	MouseClick("left",18,675,1)
+	Sleep(2000)
+
 	MouseClick("left",547,368,6)
 	Sleep(2000)
 	
 	MouseClick("left",19,308,1)
 	Sleep(2000)
 
+	MouseClick("left",337,43,1)
+	Sleep(2000)
+	
+	MouseClick("left",337,79,1)
+	Sleep(2000)
+
+	MouseClick("left",402,41,1)
+	Sleep(2000)
+	Send("^a")
+	Sleep(2000)
+	Send("1")
+	Sleep(2000)
+	Send("{Enter}")
+	Sleep(2000)
+
+	MouseMove(528,43)
+	Sleep(2000)
 	MouseMove(491,343)
 	Sleep(500)
 
@@ -41,5 +61,10 @@ EndFunc
 
 ;C:\Users\Administrator\AppData\Local\Adobe
 Func start()
+	Sleep(3000)
+	MouseMove(1008,311)
+	Sleep(2000)
+	Send("^0")
+	Sleep(2000)
 	action1()
 EndFunc
