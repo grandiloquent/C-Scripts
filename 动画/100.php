@@ -28,7 +28,7 @@ while (!feof($fp)) {
 	}
 	
 	// write out file
-	$pngfp = @fopen("C:/Users/Administrator/Desktop/应用/extracted/$pngOffset.png", "x");
+	$pngfp = @fopen("C:/Users/Administrator/Desktop/代码/脚本/动画/icons/$pngOffset.png", "x");
 	@fwrite($pngfp, $pngFile);
 	@fclose($pngfp);
 	$count++;

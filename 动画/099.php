@@ -56,11 +56,11 @@ while (!feof($fp)) {
 		continue;
 	}
 
-	$original = "C:/Users/Administrator/Desktop/应用/extracted/$offset.png";
+	$original = "C:/Users/Administrator/Desktop/代码/脚本/动画/icons/$offset.png";
 
 	// exit;
 	if (file_exists($original)) {
-		rename($original, "C:/Users/Administrator/Desktop/应用/extracted/$name.png");
+		rename($original, "C:/Users/Administrator/Desktop/代码/脚本/动画/icons/$name.png");
 	}
 }
 
