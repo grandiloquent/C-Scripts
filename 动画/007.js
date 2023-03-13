@@ -10,8 +10,8 @@ function parseSeconds(time, fps) {
 }
 function parseLine(s) {
     var pieces = s.split('|');
-    var start = parseSeconds(pieces[0], 20);
-    var end = parseSeconds(pieces[1], 20);
+    var start = parseSeconds(pieces[0], 30);
+    var end = parseSeconds(pieces[1], 30);
     var x = parseInt(pieces[2]);
     var y = parseInt(pieces[3]);
     var name = pieces[4];
@@ -363,7 +363,7 @@ function setShortKey() {
     fileObj.close();
     for (var j = 0; j < array.length; j++) {
         var pieces=array[j].split('|')
-        build(parseSeconds(pieces[0],20),pieces[1],j+''+j)
+        build(parseSeconds(pieces[0],30),pieces[1],j+''+j)
     }
     /*
     var comp = app.project.activeItem;

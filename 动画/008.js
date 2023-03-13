@@ -32,7 +32,7 @@ var selectedLayerRect=selectedLayer.sourceRectAtTime(0,false);
 //comp.addGuide(1,90)
 
 var xOffset=0;
-var inPoint=parseSeconds("0:00:09:24",20);
+var inPoint=parseSeconds("0:00:27:23",30);
 var outPoint=inPoint+3;
 
 selectedLayer.position.setValue([
