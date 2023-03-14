@@ -8,7 +8,7 @@ foreach (var process in Process.GetProcesses())
 Thread.Sleep(3000);
 var file = @"C:\Users\Administrator\Desktop\应用\Adobe Photoshop 2023.zip";
 var dir = @"C:\Users\Administrator\AppData\Roaming\Adobe\Adobe Photoshop 2023";
-//ZipFile.CreateFromDirectory(dir,file);
+ZipFile.CreateFromDirectory(dir,file);
 Directory.Delete(dir,true);
 ZipFile.ExtractToDirectory(file,dir);
 /*
