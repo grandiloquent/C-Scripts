@@ -57,18 +57,30 @@ namespace Windows
 		{
 			if (e.KeyCode == Keys.F1)
 			{
-				var start = textBox1.SelectionStart;
-				var end = textBox1.SelectionStart + textBox1.SelectionLength;
-				while (start>-1 && !(char.IsWhiteSpace(textBox1.Text[start])))
-				{ 
-					start--;
-				}
-				while (end+1<textBox1.Text.Length&& !(char.IsWhiteSpace(textBox1.Text[end+1])))
+				if (textBox1.TextLength > 0)
 				{
-					end++;
+					var start = textBox1.SelectionStart;
+					var end = textBox1.SelectionStart + textBox1.SelectionLength;
+					if (start == textBox1.TextLength)
+					{
+						start--;
+					}
+					while (start>0 && !(char.IsWhiteSpace(textBox1.Text[start])))
+					{ 
+						start--;
+					}
+					while (end+1<textBox1.Text.Length&& !(char.IsWhiteSpace(textBox1.Text[end+1])))
+					{
+						end++;
+					}
+
+					if (end == textBox1.TextLength)
+					{
+						end--;
+					}
+					Clipboard.SetText(textBox1.Text.Substring(start,end-start+1));
 				}
-				
-				Clipboard.SetText(textBox1.Text.Substring(start,end-start+1));
+			
 			}
 		}
 	}
