@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>文档</title>
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/styles/github.min.css">
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/highlight.min.js"></script>
+    <!-- and it's easy to individually load additional languages -->
+    <script src="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.7.0/build/languages/vbscript.min.js"></script>
+    <script src="markdown-it.js"></script>
+    <style>
+        body{
+            margin: 0;
+        }
+        #contents{
+            width: 800px;
+            padding: 24px;
+            box-sizing: border-box;
+        }
+        pre{
+            width: 100%;
+            white-space: pre
+        }
+        code{
+            font-family: Consolas,苹方;
+            font-size: 24px;
+            display: block;
+        }
+       
+    </style>
+</head>
+
+<body>
+    <div id="contents">
+
+    </div>
+    <script>
+        var md = new markdownit({
+            highlight: function (str, lang) {
+                if (lang && hljs.getLanguage(lang)) {
+                    try {
+                        return hljs.highlight(str, { language: lang }).value;
+                    } catch (__) { }
+                }
+
+                return ''; // use external default escaping
+            }
+        });
+        const contents = md.render(`
+\`\`\`vb
+Sub 九九乘法表()
+
+'With 语句：对单个对象或用户定义类型执行一系列语句。
+'Range 对象：表示一个单元格、一行、一列、一个包含单个或若干连续单元格区域的选定单元格范围，或者一个三维区域。
+With Range("A1:I1")
+    '
+    .Merge
+    '指定对象的水平对齐方式
+    .HorizontalAlignment = xlHAlignCenter
+    .VerticalAlignment = xlVAlignCenter
+    .Value = "九九乘法表"
+    .Font.Size = 24
+    .Font.Name = "微软雅黑"
+End With
+
+Dim cells As Range
+Dim cell As Range
+
+Set cells = Range("A2:I10")
+
+    For i = 1 To cells.Rows.Count Step 1
+        For j = 1 To cells.Columns.Count Step 1
+        Set cell = cells.cells(i, j)
+        cell.Value = CStr(j) & "x" & CStr(i) & "=" & CStr(i * j)
+        Next j
+    Next i
+
+End Sub
+\`\`\`    
+        `);
+        document.getElementById('contents').innerHTML = contents;
+    </script>
+</body>
+
+</html>
