@@ -327,7 +327,7 @@ function drawLine(comp, options) {
     var textYOffset = options.textYOffset || 19;
 
     var textLayer = drawText(comp, {
-        "color": [0 / 1 / 255, 0 / 1 / 255, 0 / 1 / 255],
+        "color": [255 / 1 / 255, 255 / 1 / 255, 255 / 1 / 255],
         "font": "",
         "fontSize": fontSize,
         "inPoint": inPoint,
@@ -340,7 +340,7 @@ function drawLine(comp, options) {
     )
     var textLayerRect = textLayer.sourceRectAtTime(inPoint, false);
     var layer = drawSquare(comp, {
-        "color": [1, 1, 1],
+        "color": [103*1/255, 58*1/255, 183*1/255],
         "height": rectHeight,
         "opacity": 100,
         "radius": rectHeight >> 1,
@@ -398,7 +398,7 @@ function parseSeconds(time, fps) {
         + parseInt(matched[4]) * 1 / fps
     return seconds;
 }
-drawLine1280x720('Ctrl+Enter键填充所选单元格', 
-parseSeconds('0:01:01:16',30),
-parseSeconds('0:01:13:02',30)
+drawLine1280x720('Ctrl+C 复制 | Ctrl+X 剪切 | Ctrl+V 粘贴', 
+parseSeconds('0:01:27:20',30),
+parseSeconds('0:01:35:21',30)
 );
